@@ -1,0 +1,45 @@
+name: Software checks
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Byte-compile sources
+        run: python -m compileall -q pocket_debugger tests
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Demo and CLI workflows
+        run: |
+          python -m pocket_debugger demo --output demo-output
+          python -m pocket_debugger replay demo-output/session.jsonl --csv demo-output/replay.csv
+          python -m pocket_debugger report demo-output/session.jsonl --output demo-output/review.html
+          python -m pocket_debugger frame-bytes demo-output/bytes.jsonl --output demo-output/framed.jsonl --origin simulated --start "2026-10-03T09:00:00+07:00"
+          python -m pocket_debugger decode "01 03 00 00 00 0A C5 CD"
+          python -m pocket_debugger shunt --millivolts 3000 --ohms 250
+      - name: Report smoke test
+        run: node tests/report-smoke.cjs demo-output/report.html
+      - name: Packaging check
+        run: |
+          python -m pip install --quiet .
+          pocket-debugger --version
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        with:
+          name: demo-output
+          path: demo-output
+          retention-days: 14
