@@ -112,21 +112,6 @@ hardware/              Design requirements and tentative BOM categories
 
 The [hardware plan](hardware/README.md) defines the future receive-only interface and loop-measure/source paths. The [roadmap](docs/roadmap.md) describes the next build milestones. The [validation record](docs/validation.md) distinguishes checks performed here from hardware and CI work still outstanding.
 
-## Publish this project to GitHub
-
-Create an empty GitHub repository named `pocket-field-debugger`. From this local folder, configure your own Git author identity if needed, then run:
-
-```console
-git init --initial-branch=main
-git add .
-git commit -m "Initial standalone software prototype"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/pocket-field-debugger.git
-git push -u origin main
-```
-
-The local checkout is initialized on `main`; the downloadable ZIP excludes Git metadata, so initialize it after extracting. No remote repository, commit, or publication was created by this build. Replace `YOUR-USERNAME` before running the remote commands.
-
 ## References and license
 
 Protocol behavior is based on the [Modbus Serial Line Guide V1.02](https://www.modbus.org/file/secure/modbusoverserial.pdf) and [Modbus Application Protocol V1.1b3](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf). See [bench verification](docs/bench-verification.md) for the hardware tests required before adopting measured performance claims.
